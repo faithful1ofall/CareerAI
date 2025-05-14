@@ -15,7 +15,7 @@ const EnvChecker: React.FC = () => {
 
   return (
     <div className={`text-xs rounded-md px-2 py-1 ${hasApiKey ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-      API Key: {hasApiKey ? 'Found ✓' : 'Not found ✗'}
+      .env API Key: {hasApiKey ? 'Found ✓' : 'Not found ✗'}
     </div>
   );
 };

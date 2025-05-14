@@ -18,9 +18,8 @@ A sample Next.js application demonstrating how to integrate with the Sensay AI A
 
 - **Framework**: Next.js with TypeScript
 - **Styling**: Tailwind CSS
-- **HTTP Client**: Axios
+- **HTTP Client**: HeyAPI with Fetch
 - **Code Highlighting**: react-syntax-highlighter
-- **Deployment**: Vercel (recommended)
 
 ## 📋 Prerequisites
 
@@ -227,7 +226,7 @@ const response = await client.chatCompletions.postV1ReplicasChatCompletions(
 console.log(response.content);
 ```
 
-### OpenAI-Compatible Endpoint
+### OpenAI-Compatible Endpoint (experimental)
 
 ```typescript
 // Using the OpenAI-compatible experimental endpoint
@@ -250,7 +249,7 @@ console.log(response.choices[0].message.content);
 
 | Variable                           | Description                               | Required |
 |------------------------------------|-------------------------------------------|----------|
-| `NEXT_PUBLIC_SENSAY_API_KEY_SECRET`| Your Sensay API key                       | Yes      |
+| `NEXT_PUBLIC_SENSAY_API_KEY_SECRET`| Your Sensay API key                       | No       |
 
 Note: No replica UUID is needed - the application will automatically create or reuse a replica at runtime.
 ## 🔧 Project Structure

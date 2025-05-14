@@ -121,13 +121,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       // Check if we have a replica with our sample slug
       let uuid: string | undefined;
       if (replicas && replicas.items) {
-        console.log(`Looking for replica with slug: ${SAMPLE_REPLICA_SLUG} among ${replicas.items.length} replicas`);
-        const sampleReplica = replicas.items.find(replica => replica.slug === SAMPLE_REPLICA_SLUG);
+        console.log('Looking for an existing replica');
+        const sampleReplica = replicas.items[0];
         if (sampleReplica) {
           uuid = sampleReplica.uuid;
           console.log(`✅ Found existing replica: ${SAMPLE_REPLICA_SLUG} with UUID: ${uuid}`);
         } else {
-          console.log(`❌ No replica found with slug: ${SAMPLE_REPLICA_SLUG}`);
+          console.log('❌ No replica found');
         }
       } else {
         console.log('No replicas found or replicas.items is undefined');
@@ -137,11 +137,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       if (!uuid) {
         console.log('Step 5: Creating new replica...');
         try {
+          // Generate a unique slug by adding a timestamp and random string
+          const timestamp = Date.now();
+          const randomStr = Math.random().toString(36).substring(2, 8);
+          const uniqueSlug = `${SAMPLE_REPLICA_SLUG}-${timestamp}-${randomStr}`;
+          
+          console.log(`Generated unique slug: ${uniqueSlug}`);
+          
           const replicaPayload = {
             name: "Sample Replica",
             shortDescription: "A sample replica for demonstration",
             greeting: "Hello, I'm the sample replica. How can I help you today?",
-            slug: SAMPLE_REPLICA_SLUG,
+            slug: uniqueSlug, // Use the generated unique slug instead of the static one
             ownerID: SAMPLE_USER_ID,
             llm: {
               model: "claude-3-7-sonnet-latest",
@@ -153,7 +160,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           
           const newReplica = await userClient.replicas.postV1Replicas(API_VERSION, replicaPayload);
           uuid = newReplica.uuid;
-          console.log(`✅ Created new replica: ${SAMPLE_REPLICA_SLUG} with UUID: ${uuid}`);
+          console.log(`✅ Created new replica with unique slug: ${uniqueSlug}, UUID: ${uuid}`);
         } catch (createReplicaError: any) {
           console.error('❌ Failed to create replica:', createReplicaError);
           
