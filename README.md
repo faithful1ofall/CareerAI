@@ -12,7 +12,6 @@ A sample Next.js application demonstrating how to integrate with the Sensay AI A
 - Typed API client for the Sensay AI API
 - Code examples for quick integration
 - Environment variable support for API keys
-- Easy deployment to Vercel
 
 ## 🛠️ Tech Stack
 
