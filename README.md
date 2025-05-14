@@ -17,7 +17,8 @@ A sample Next.js application demonstrating how to integrate with the Sensay AI A
 
 - **Framework**: Next.js with TypeScript
 - **Styling**: Tailwind CSS
-- **HTTP Client**: HeyAPI with Fetch
+- **API SDK**: openapi-typescript-codegen
+- **HTTP Client**: Fetch API
 - **Code Highlighting**: react-syntax-highlighter
 
 ## 📋 Prerequisites
@@ -303,7 +304,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 🔄 Updating the SDK
 
-This project uses the OpenAPI TypeScript Codegen library to generate TypeScript clients from the Sensay OpenAPI schema. The generated SDK is stored in the `src/sensay-sdk` directory.
+This project uses the [openapi-typescript-codegen](https://github.com/ferdikoomen/openapi-typescript-codegen) library to generate TypeScript clients from the Sensay OpenAPI schema. The generated SDK is stored in the `src/sensay-sdk` directory.
 
 To update the SDK when the API changes, run the provided npm script:
 
@@ -311,4 +312,8 @@ To update the SDK when the API changes, run the provided npm script:
 npm run generate-sdk
 ```
 
-This will fetch the latest OpenAPI schema from `https://api.sensay.io/schema` and generate updated TypeScript client code in the `src/sensay-sdk` directory.
+This will:
+1. Fetch the latest OpenAPI schema from `https://api.sensay.io/schema`
+2. Generate fully typed TypeScript client code in the `src/sensay-sdk` directory
+3. Create service classes for each API endpoint group
+4. Provide type definitions for all request and response objects
