@@ -4,12 +4,6 @@ A sample Next.js application demonstrating how to integrate with the Sensay AI A
 
 ![Demo Screenshot](./public/screenshot.png)
 
-## 🚀 Live Demo
-
-[View the live demo](https://sensay-chat-client-sample.vercel.app/) (coming soon)
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsensay-io%2Fchat-client-sample)
-
 ## ✨ Features
 
 - Modern React application built with Next.js and TypeScript
@@ -313,11 +307,10 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 This project uses the OpenAPI TypeScript Codegen library to generate TypeScript clients from the Sensay OpenAPI schema. The generated SDK is stored in the `src/sensay-sdk` directory.
 
-To update the SDK when the API changes, you can use the openapi-typescript-codegen library:
+To update the SDK when the API changes, run the provided npm script:
 
 ```bash
-npm install --save-dev openapi-typescript-codegen
-npx openapi-typescript-codegen --input https://api.sensay.io/schema --output ./src/sensay-sdk
+npm run generate-sdk
 ```
 
 This will fetch the latest OpenAPI schema from `https://api.sensay.io/schema` and generate updated TypeScript client code in the `src/sensay-sdk` directory.

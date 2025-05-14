@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { SensayAPI } from '@/sensay-sdk';
+import { VerboseSensayAPI } from '@/api-debug';
 import { SAMPLE_USER_ID, SAMPLE_REPLICA_SLUG, API_VERSION } from '@/constants/auth';
 
 // Define chat message type
@@ -52,84 +52,167 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   // Initialize user and replica for the session
-  const initializeSession = async (client: SensayAPI): Promise<string> => {
+  const initializeSession = async (client: VerboseSensayAPI): Promise<string> => {
+    console.log('--- INITIALIZING SESSION ---');
     if (replicaUuid) {
+      console.log(`Reusing existing replica UUID: ${replicaUuid}`);
       return replicaUuid;
     }
 
     try {
       // Step 1: Check if the sample user exists (authenticate without X-USER-ID)
-      const orgOnlyClient = new SensayAPI({
+      console.log('Step 1: Checking if sample user exists...');
+      const orgOnlyClient = new VerboseSensayAPI({
         HEADERS: {
           'X-ORGANIZATION-SECRET': localApiKey
         }
       });
+      console.log('Created org-only client without user authentication');
       
       let userExists = false;
       
       try {
         // Try to get the user
+        console.log(`Attempting to get user with ID: ${SAMPLE_USER_ID}`);
         await orgOnlyClient.users.getV1Users(SAMPLE_USER_ID);
         userExists = true;
-        console.log(`User ${SAMPLE_USER_ID} exists`);
+        console.log(`✅ User ${SAMPLE_USER_ID} exists`);
       } catch (error) {
-        console.log(`User ${SAMPLE_USER_ID} does not exist, will create it`);
+        console.log(`❌ User ${SAMPLE_USER_ID} does not exist, will create it`);
+        console.log('Get user error details:', error);
       }
       
       // Step 2: Create the user if it doesn't exist
       if (!userExists) {
-        await orgOnlyClient.users.postV1Users(API_VERSION, {
-          id: SAMPLE_USER_ID,
-          email: `${SAMPLE_USER_ID}@example.com`,
-          name: "Sample User"
-        });
-        console.log(`Created user ${SAMPLE_USER_ID}`);
+        console.log('Step 2: Creating new user...');
+        try {
+          const newUser = await orgOnlyClient.users.postV1Users(API_VERSION, {
+            id: SAMPLE_USER_ID,
+            name: "Sample User"
+          });
+          console.log(`✅ Created user ${SAMPLE_USER_ID}:`, newUser);
+        } catch (createUserError) {
+          console.error('❌ Failed to create user:', createUserError);
+          throw createUserError;
+        }
       }
       
       // Step 3: Now use the user-authenticated client for further operations
-      const userClient = new SensayAPI({
+      console.log('Step 3: Creating user-authenticated client...');
+      const userClient = new VerboseSensayAPI({
         HEADERS: {
           'X-ORGANIZATION-SECRET': localApiKey,
           'X-USER-ID': SAMPLE_USER_ID
         }
       });
+      console.log('Created user-authenticated client');
       
       // Step 4: List all replicas for this user
-      const replicas = await userClient.replicas.getV1Replicas();
+      console.log('Step 4: Listing all replicas for user...');
+      let replicas;
+      try {
+        replicas = await userClient.replicas.getV1Replicas();
+        console.log('Replicas response:', replicas);
+      } catch (listReplicasError) {
+        console.error('❌ Failed to list replicas:', listReplicasError);
+        throw listReplicasError;
+      }
       
       // Check if we have a replica with our sample slug
       let uuid: string | undefined;
       if (replicas && replicas.items) {
+        console.log(`Looking for replica with slug: ${SAMPLE_REPLICA_SLUG} among ${replicas.items.length} replicas`);
         const sampleReplica = replicas.items.find(replica => replica.slug === SAMPLE_REPLICA_SLUG);
         if (sampleReplica) {
           uuid = sampleReplica.uuid;
-          console.log(`Found existing replica: ${SAMPLE_REPLICA_SLUG}`);
+          console.log(`✅ Found existing replica: ${SAMPLE_REPLICA_SLUG} with UUID: ${uuid}`);
+        } else {
+          console.log(`❌ No replica found with slug: ${SAMPLE_REPLICA_SLUG}`);
         }
+      } else {
+        console.log('No replicas found or replicas.items is undefined');
       }
       
       // Step 5: Create a replica if it doesn't exist
       if (!uuid) {
-        const newReplica = await userClient.replicas.postV1Replicas(API_VERSION, {
-          name: "Sample Replica",
-          shortDescription: "A sample replica for demonstration",
-          greeting: "Hello, I'm the sample replica. How can I help you today?",
-          slug: SAMPLE_REPLICA_SLUG,
-          ownerID: SAMPLE_USER_ID,
-          llm: {
-            model: "claude-3-7-sonnet-latest",
-            memoryMode: "prompt-caching",
-            systemMessage: "You are a helpful AI assistant that provides clear and concise responses."
+        console.log('Step 5: Creating new replica...');
+        try {
+          const replicaPayload = {
+            name: "Sample Replica",
+            shortDescription: "A sample replica for demonstration",
+            greeting: "Hello, I'm the sample replica. How can I help you today?",
+            slug: SAMPLE_REPLICA_SLUG,
+            ownerID: SAMPLE_USER_ID,
+            llm: {
+              model: "claude-3-7-sonnet-latest",
+              memoryMode: "prompt-caching",
+              systemMessage: "You are a helpful replica that provides clear and concise responses."
+            }
+          };
+          console.log('Creating replica with payload:', replicaPayload);
+          
+          const newReplica = await userClient.replicas.postV1Replicas(API_VERSION, replicaPayload);
+          uuid = newReplica.uuid;
+          console.log(`✅ Created new replica: ${SAMPLE_REPLICA_SLUG} with UUID: ${uuid}`);
+        } catch (createReplicaError: any) {
+          console.error('❌ Failed to create replica:', createReplicaError);
+          
+          // Handle 409 Conflict specifically
+          if (createReplicaError.status === 409) {
+            console.error('409 Conflict: A replica with this slug already exists');
+            console.error('The replica might exist globally but is not accessible by this user');
+            
+            // Instead of throwing the error, we could:
+            // 1. Try with a different slug 
+            // 2. Try to fetch by UUID directly if we have it
+            // 3. Manually return a "fallback" UUID if we know it
+            
+            // For now, just make the error message more informative
+            const specificError = new Error(
+              `A replica with slug "${SAMPLE_REPLICA_SLUG}" already exists but couldn't be accessed. ` +
+              `This typically happens when a replica with the same slug exists but is owned by a different user. ` +
+              `Try using a different slug by modifying SAMPLE_REPLICA_SLUG in src/constants/auth.ts.`
+            );
+            throw specificError;
           }
-        });
-        uuid = newReplica.uuid;
-        console.log(`Created new replica: ${SAMPLE_REPLICA_SLUG}`);
+          
+          throw createReplicaError;
+        }
       }
       
+      console.log(`Setting replica UUID: ${uuid}`);
       setReplicaUuid(uuid);
+      console.log('--- SESSION INITIALIZATION COMPLETE ---');
       return uuid;
-    } catch (error) {
-      console.error('Error initializing session:', error);
-      throw new Error('Failed to initialize Sensay session. Please check your API key.');
+    } catch (error: any) {
+      console.error('❌❌❌ Error initializing session:', error);
+      console.error('Error type:', typeof error);
+      
+      // Check specifically for unauthorized errors which likely indicate an invalid API key
+      let userFriendlyMessage = '';
+      
+      if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('401')) {
+        userFriendlyMessage = 'Invalid or expired API key. Please check your API key and try again.';
+        console.error('Authentication error detected - likely invalid API key');
+      } else if (error.status === 403 || error.message?.includes('Forbidden') || error.message?.includes('403')) {
+        userFriendlyMessage = 'Your API key does not have permission for this operation. Please check your account permissions.';
+      } else if (error.status === 429 || error.message?.includes('Too Many Requests') || error.message?.includes('429')) {
+        userFriendlyMessage = 'Rate limit exceeded. Please wait a moment and try again.';
+      } else {
+        // Generic error handling
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        userFriendlyMessage = errorMessage;
+      }
+      
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      } else {
+        console.error('Non-Error object:', JSON.stringify(error, null, 2));
+      }
+      
+      throw new Error(`Failed to initialize Sensay session: ${userFriendlyMessage}`);
     }
   };
 
@@ -155,7 +238,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     
     try {
       // Initialize API client with the API key
-      const client = new SensayAPI({
+      const client = new VerboseSensayAPI({
         // Use custom headers instead of TOKEN
         HEADERS: {
           'X-ORGANIZATION-SECRET': localApiKey,
@@ -203,12 +286,30 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       // Extract the specific error message from the API response
       let errorMessage = 'Failed to send message. Please check your API key and try again.';
       
+      // Create a more user-friendly error message based on error type
       if (err instanceof Error) {
         errorMessage = err.message;
+        
+        // Check for specific error patterns to provide better guidance
+        if (errorMessage.includes('Invalid or expired API key')) {
+          errorMessage = 'Invalid or expired API key. Please check your API key and try again.';
+        } else if (errorMessage.includes('Unauthorized') || errorMessage.includes('401')) {
+          errorMessage = 'Authentication failed. Your API key may be invalid or expired.';
+        } else if (errorMessage.includes('Forbidden') || errorMessage.includes('403')) {
+          errorMessage = 'You don\'t have permission to perform this action. Please check your account access level.';
+        } else if (errorMessage.includes('Too Many Requests') || errorMessage.includes('429')) {
+          errorMessage = 'Rate limit exceeded. Please wait a moment before trying again.';
+        } else if (errorMessage.includes('Network Error') || errorMessage.includes('Failed to fetch')) {
+          errorMessage = 'Network connection issue. Please check your internet connection and try again.';
+        }
       } else if (typeof err === 'object' && err !== null) {
         // Try to extract error message from different possible formats
         const errorObj = err as any;
-        if (errorObj.error?.message) {
+        
+        // Check for authentication errors first - most common issue
+        if (errorObj.status === 401 || (errorObj.response && errorObj.response.status === 401)) {
+          errorMessage = 'Authentication failed. Your API key may be invalid or expired.';
+        } else if (errorObj.error?.message) {
           errorMessage = errorObj.error.message;
         } else if (errorObj.error) {
           errorMessage = typeof errorObj.error === 'string' ? errorObj.error : JSON.stringify(errorObj.error);
@@ -321,18 +422,41 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       {/* Input Form */}
       <form onSubmit={handleSubmit} className="relative">
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-3">
+          <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4 shadow-sm">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-6 w-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Error</h3>
-                <div className="mt-1 text-sm text-red-700">
+              <div className="ml-3 flex-1">
+                <h3 className="text-md font-medium text-red-800">Error</h3>
+                <div className="mt-2 text-sm text-red-700">
                   {error}
                 </div>
+                
+                {/* Display helpful suggestions based on error message */}
+                {error.includes('API key') && (
+                  <div className="mt-3 bg-white p-3 rounded border border-red-100 text-xs text-gray-700">
+                    <p className="font-medium mb-1">Possible solutions:</p>
+                    <ul className="list-disc pl-4 space-y-1">
+                      <li>Check if your API key is entered correctly</li>
+                      <li>Make sure there are no extra spaces before or after the key</li>
+                      <li>Try generating a new API key from the Sensay dashboard</li>
+                      <li>Ensure your Sensay account has API access enabled</li>
+                    </ul>
+                  </div>
+                )}
+                
+                {error.includes('replica') && (
+                  <div className="mt-3 bg-white p-3 rounded border border-red-100 text-xs text-gray-700">
+                    <p className="font-medium mb-1">Possible solutions:</p>
+                    <ul className="list-disc pl-4 space-y-1">
+                      <li>Edit the SAMPLE_REPLICA_SLUG in src/constants/auth.ts to use a unique name</li>
+                      <li>Check your Sensay dashboard for existing replicas</li>
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>
