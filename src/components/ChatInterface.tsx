@@ -4,6 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import { VerboseSensayAPI } from '@/api-debug';
 import { SAMPLE_USER_ID, SAMPLE_REPLICA_SLUG, API_VERSION } from '@/constants/auth';
 
+// Import types for the replica payload
+type LlmModel = 'gpt-4o' | 'claude-3-5-haiku-latest' | 'claude-3-7-sonnet-latest' | 'grok-2-latest' | 'grok-3-beta' | 'deepseek-chat' | 'o3-mini' | 'gpt-4o-mini' | 'huggingface-eva' | 'huggingface-dolphin-llama';
+type MemoryMode = 'prompt-caching' | 'rag-search';
+type ReplicaType = 'individual' | 'character' | 'brand';
+
 // Define chat message type
 interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -151,8 +156,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             slug: uniqueSlug, // Use the generated unique slug instead of the static one
             ownerID: SAMPLE_USER_ID,
             llm: {
-              model: "claude-3-7-sonnet-latest",
-              memoryMode: "prompt-caching",
+              model: 'claude-3-7-sonnet-latest' as LlmModel,
+              memoryMode: 'prompt-caching' as MemoryMode,
               systemMessage: "You are a helpful replica that provides clear and concise responses."
             }
           };
