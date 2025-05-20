@@ -404,7 +404,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <div className="flex-1 overflow-y-auto mb-4 p-4 bg-white rounded-lg shadow">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full text-gray-400">
-            <p>Start a conversation with the Sensay AI</p>
+            <p>Start a conversation with the Career AI</p>
           </div>
         ) : (
           <div className="space-y-4">
