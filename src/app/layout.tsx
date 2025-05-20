@@ -5,8 +5,8 @@ import '@/styles/globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Sensay AI Chat Sample',
-  description: 'A sample project demonstrating integration with the Sensay AI API',
+  title: 'Career Coach AI',
+  description: 'A Professional Skills Trainer (Interview Simulator)',
 };
 
 export default function RootLayout({
