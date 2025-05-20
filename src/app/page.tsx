@@ -245,7 +245,7 @@ console.log(response.choices[0].message.content);
       <footer className="py-6 border-t border-gray-200 mt-auto">
         <div className="flex justify-between items-center">
           <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Career AI
+            &copy; {new Date().getFullYear()} Career Coach AI
           </p>
         </div>
       </footer>
