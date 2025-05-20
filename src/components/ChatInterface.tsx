@@ -151,7 +151,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           
           const replicaPayload = {
             name: "Career Coach AI",
-            shortDescription: "A virtual coach to guide you through your career journey",
+            shortDescription: "A coach to guide your career journey",
             greeting: "Hi, I’m your Career AI. How can I help you with your career today?",
             slug: uniqueSlug, // Use the generated unique slug instead of the static one
             ownerID: SAMPLE_USER_ID,
