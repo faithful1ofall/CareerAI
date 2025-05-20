@@ -139,9 +139,6 @@ console.log(response.choices[0].message.content);
             <p className="text-gray-600 mt-1">
               A Professional Skills Trainer (Interview Simulator)
             </p>
-            <div className="mt-2">
-              <EnvChecker />
-            </div>
           </div>
           <div className="flex flex-wrap gap-3">
             <button
@@ -248,34 +245,8 @@ console.log(response.choices[0].message.content);
       <footer className="py-6 border-t border-gray-200 mt-auto">
         <div className="flex justify-between items-center">
           <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Sensay AI Sample
+            &copy; {new Date().getFullYear()} Career AI
           </p>
-          <div className="flex space-x-4">
-            <a
-              href="https://sensay.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-gray-500 hover:text-gray-700"
-              onClick={(e) => { 
-                e.preventDefault(); 
-                window.open('https://sensay.io', '_blank', 'noopener,noreferrer'); 
-              }}
-            >
-              Sensay AI Website
-            </a>
-            <a
-              href="https://docs.sensay.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-gray-500 hover:text-gray-700"
-              onClick={(e) => { 
-                e.preventDefault(); 
-                window.open('https://docs.sensay.io', '_blank', 'noopener,noreferrer'); 
-              }}
-            >
-              API Documentation
-            </a>
-          </div>
         </div>
       </footer>
       
