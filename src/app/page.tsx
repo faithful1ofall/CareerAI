@@ -135,9 +135,9 @@ console.log(response.choices[0].message.content);
       <header className="py-6 border-b border-gray-200">
         <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Career AI</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Career Coach AI</h1>
             <p className="text-gray-600 mt-1">
-              A Professional Skills Trainer (Interview Simulator)
+              A Professional Skills Trainer
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -176,7 +176,7 @@ console.log(response.choices[0].message.content);
             <section>
               <h2 className="text-xl font-semibold mb-4">Getting Started</h2>
               <p className="mb-4">
-                To use the Sensay AI API, you&apos;ll need an API key and a Replica UUID. 
+                To use the Career Coach AI, you&apos;ll need an API key and a Replica UUID. 
                 The SDK will help you manage replicas and interact with the API.
               </p>
               <CodeBlock
