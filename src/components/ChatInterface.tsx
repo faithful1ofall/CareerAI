@@ -393,8 +393,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </div>
             <p className="text-xs text-gray-500 mt-2">
               This value will be stored in your browser. 
-              For development use, set it as the NEXT_PUBLIC_SENSAY_API_KEY_SECRET environment variable.
-              <br />
+             <br />
               Note: A user and replica will be automatically created or reused when connecting.
             </p>
           </div>
@@ -419,7 +418,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 }`}
               >
                 <div className="text-xs text-gray-500 mb-1">
-                  {message.role === 'user' ? 'You' : 'Sensay AI'}
+                  {message.role === 'user' ? 'You' : 'Career AI'}
                 </div>
                 <div className="whitespace-pre-wrap">
                   {formatMessage(message.content)}
