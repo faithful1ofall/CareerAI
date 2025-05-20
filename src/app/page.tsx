@@ -160,7 +160,7 @@ console.log(response.choices[0].message.content);
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              Chat Demo
+              Chat
             </button>
           </nav>
         </div>
