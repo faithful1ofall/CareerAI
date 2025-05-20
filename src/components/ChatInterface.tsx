@@ -150,15 +150,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           console.log(`Generated unique slug: ${uniqueSlug}`);
           
           const replicaPayload = {
-            name: "Sample Replica",
-            shortDescription: "A sample replica for demonstration",
-            greeting: "Hello, I'm the sample replica. How can I help you today?",
+            name: "Career Coach AI",
+            shortDescription: "A virtual coach to guide you through your career journey",
+            greeting: "Hi, I’m your Career AI. How can I help you with your career today?",
             slug: uniqueSlug, // Use the generated unique slug instead of the static one
             ownerID: SAMPLE_USER_ID,
             llm: {
               model: 'claude-3-7-sonnet-latest' as LlmModel,
               memoryMode: 'prompt-caching' as MemoryMode,
-              systemMessage: "You are a helpful replica that provides clear and concise responses."
+              systemMessage: "You are a friendly and knowledgeable career coach. You help users identify their strengths, set goals, and give guidance on job searching, resume writing, interview preparation, and career development. Provide personalized and practical advice."
             }
           };
           console.log('Creating replica with payload:', replicaPayload);
