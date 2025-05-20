@@ -135,9 +135,9 @@ console.log(response.choices[0].message.content);
       <header className="py-6 border-b border-gray-200">
         <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Sensay AI Chat Sample</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Career AI</h1>
             <p className="text-gray-600 mt-1">
-              A demonstration of integrating with the Sensay AI API
+              A Professional Skills Trainer (Interview Simulator)
             </p>
             <div className="mt-2">
               <EnvChecker />
@@ -150,42 +150,6 @@ console.log(response.choices[0].message.content);
             >
               Redeem API Key
             </button>
-            <a
-              href="https://docs.google.com/forms/d/11ExevrfKClc7IfQf7kjEpIiLqHtHE_E42Y752KV7mYY/edit"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn bg-purple-600 hover:bg-purple-700 text-white"
-              onClick={(e) => { 
-                e.preventDefault(); 
-                window.open('https://docs.google.com/forms/d/11ExevrfKClc7IfQf7kjEpIiLqHtHE_E42Y752KV7mYY/edit', '_blank', 'noopener,noreferrer'); 
-              }}
-            >
-              Request API Key
-            </a>
-            <a
-              href="https://docs.sensay.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-secondary"
-              onClick={(e) => { 
-                e.preventDefault(); 
-                window.open('https://docs.sensay.io', '_blank', 'noopener,noreferrer'); 
-              }}
-            >
-              API Documentation
-            </a>
-            <a
-              href="https://github.com/sensay-io/chat-client-sample"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-              onClick={(e) => { 
-                e.preventDefault(); 
-                window.open('https://github.com/sensay-io/chat-client-sample', '_blank', 'noopener,noreferrer'); 
-              }}
-            >
-              GitHub Repo
-            </a>
           </div>
         </div>
         
@@ -200,16 +164,6 @@ console.log(response.choices[0].message.content);
               }`}
             >
               Chat Demo
-            </button>
-            <button
-              onClick={() => setActiveTab('code')}
-              className={`py-2 px-1 font-medium text-sm ${
-                activeTab === 'code'
-                  ? 'text-primary border-b-2 border-primary'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Code Examples
             </button>
           </nav>
         </div>
